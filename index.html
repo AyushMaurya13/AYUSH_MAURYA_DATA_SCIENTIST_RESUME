@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open When… 💌 — For Anshika</title>
+
+  <!-- Google Font for a soft, aesthetic look -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap"
+    rel="stylesheet" />
+    
+  <!-- Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* =============================================
+       1. CSS RESET & ROOT VARIABLES
+    ============================================= */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --pink: #ff9aae;
+      --lavender: #b69de0;
+      --periwinkle: #a3c4ea;
+      --blush: #ffd1d8;
+      --mint: #b2ebd9;
+      --text-dark: #4a3050;
+      --text-med: #6a4f7a;
+      --card-bg: rgba(255, 255, 255, 0.45);
+      --card-border: rgba(255, 255, 255, 0.8);
+      --shadow: 0 15px 35px rgba(150, 100, 150, 0.2);
+    }
+
+    /* =============================================
+       2. ANIMATED BACKGROUND GRADIENT
+    ============================================= */
+    body {
+      min-height: 100vh;
+      font-family: 'Quicksand', sans-serif;
+      /* Animated Gradient */
+      background: linear-gradient(-45deg, #ffd1d8, #e4cbf5, #c9e8f5, #d5f5e8);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 16px 80px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* =============================================
+       3. INTRO SPLASH SCREEN
+    ============================================= */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+    #splash-screen h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      color: var(--text-dark);
+      animation: pulseSplash 2s infinite;
+    }
+    @keyframes pulseSplash {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    /* =============================================
+       4. FLOATING PARTICLES
+    ============================================= */
+    .heart-particle {
+      position: fixed;
+      bottom: -60px;
+      font-size: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      animation: floatUp linear infinite;
+      z-index: 0;
+      user-select: none;
+      filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.8) rotate(-15deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.4; }
+      100% { transform: translateY(-110vh) scale(1.2) rotate(15deg); opacity: 0; }
+    }
+
+    /* =============================================
+       5. MUSIC BUTTON
+    ============================================= */
+    #music-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.6);
+      border: 2px solid var(--card-border);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      color: var(--text-dark);
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #music-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(255, 179, 198, 0.4);
+    }
+
+    /* =============================================
+       6. MAIN CARD (GLASSMORPHISM)
+    ============================================= */
+    .main-card {
+      position: relative;
+      z-index: 10;
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 32px;
+      padding: 50px 40px 40px;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: var(--shadow), inset 0 0 20px rgba(255, 255, 255, 0.5);
+      text-align: center;
+      animation: cardFloat 6s ease-in-out infinite;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    
+    .main-card.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* =============================================
+       7. TITLE & SUBTITLE
+    ============================================= */
+    .emoji-top {
+      font-size: 3rem;
+      display: inline-block;
+      margin-bottom: 15px;
+      animation: bounceHeart 2s infinite;
+      filter: drop-shadow(0 4px 8px rgba(255, 100, 150, 0.3));
+    }
+
+    @keyframes bounceHeart {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-15px) scale(1.1); }
+      60% { transform: translateY(-7px) scale(1.05); }
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      /* Gradient Text */
+      background: linear-gradient(45deg, #ff6b8b, #8e44ad, #3498db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: shine 4s linear infinite;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-med);
+      margin-bottom: 40px;
+      font-weight: 600;
+    }
+
+    /* =============================================
+       8. BUTTON GRID & SHIMMER EFFECT
+    ============================================= */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .open-btn {
+      position: relative;
+      overflow: hidden;
+      padding: 18px 16px;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 20px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Shimmer pseudo-element */
+    .open-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
+      transform: skewX(-20deg);
+      transition: 0.5s;
+    }
+
+    .open-btn:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+      border-color: rgba(255,255,255,0.8);
+    }
+    
+    .open-btn:hover::before {
+      left: 150%;
+    }
+
+    .open-btn:active { transform: scale(0.95); }
+
+    /* Button gradients */
+    .btn-sad { background: linear-gradient(135deg, #ffc5d0, #ff9aae); color: #7a2040; }
+    .btn-miss { background: linear-gradient(135deg, #d8bfff, #b69de0); color: #4a2870; }
+    .btn-sleep { background: linear-gradient(135deg, #b8d0f5, #9abcee); color: #1a3a70; }
+    .btn-giveup { background: linear-gradient(135deg, #ffd9b3, #ffb870); color: #7a4010; }
+    .btn-smile { background: linear-gradient(135deg, #b8f0d8, #86deb6); color: #0a5030; }
+
+    /* Surprise button */
+    .btn-surprise {
+      grid-column: 1 / -1;
+      background: linear-gradient(45deg, #ffe0f0, #f5d0ff, #d0e8ff, #e0ffd0);
+      background-size: 300% 300%;
+      color: var(--text-dark);
+      font-size: 1rem;
+      padding: 20px;
+      border: 2px dashed rgba(182, 157, 224, 0.8);
+      animation: superGlow 4s ease infinite, gradientBG 8s ease infinite;
+    }
+
+    @keyframes superGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(201, 184, 232, 0.4); }
+      50% { box-shadow: 0 0 35px rgba(255, 150, 200, 0.8); }
+    }
+
+    /* =============================================
+       9. MESSAGE BOX
+    ============================================= */
+    .message-box {
+      display: none;
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      padding: 40px 35px;
+      max-width: 650px;
+      width: 100%;
+      margin-top: 25px;
+      box-shadow: 0 20px 50px rgba(150, 100, 150, 0.25);
+      text-align: left;
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .message-box.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .message-box.animating {
+      display: block;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px dashed rgba(200, 180, 220, 0.4);
+    }
+
+    .message-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+      animation: gentleRock 3s infinite ease-in-out;
+    }
+    
+    @keyframes gentleRock {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    .message-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    #typewriter-text {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      line-height: 1.9;
+      font-weight: 600;
+      min-height: 120px;
+      white-space: pre-wrap;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.1em;
+      background: #ff6b8b;
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 0.75s step-end infinite;
+      border-radius: 2px;
+    }
+
+    /* Close button */
+    .close-btn {
+      margin-top: 30px;
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffc5d0, #c9b8e8);
+      color: var(--text-dark);
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .close-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(180, 130, 180, 0.3);
+      filter: brightness(1.05);
+    }
+
+    /* =============================================
+       10. FOOTER
+    ============================================= */
+    .footer {
+      position: relative;
+      z-index: 10;
+      margin-top: 35px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-med);
+      background: rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* =============================================
+       11. RESPONSIVE
+    ============================================= */
+    @media (max-width: 480px) {
+      .main-card { padding: 40px 20px 30px; }
+      .btn-grid { grid-template-columns: 1fr; }
+      .btn-surprise { grid-column: 1; }
+      .message-box { padding: 30px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <h2>For Anshika... 💌</h2>
+  </div>
+
+  <!-- Audio -->
+  <audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <button id="music-btn" onclick="toggleMusic()">
+    <span id="music-icon">🎵</span> Music
+  </button>
+
+  <div class="main-card" id="main-card">
+    <span class="emoji-top">💖</span>
+    <h1>Hey Anshika, this is for you</h1>
+    <p class="subtitle">Click whichever one feels right right now, little sis ✨</p>
+
+    <div class="btn-grid">
+      <button class="open-btn btn-sad" onclick="openMessage('sad')">
+        <span>😢</span> Open when you're sad
+      </button>
+
+      <button class="open-btn btn-miss" onclick="openMessage('miss')">
+        <span>🌙</span> Open when you miss me
+      </button>
+
+      <button class="open-btn btn-sleep" onclick="openMessage('sleep')">
+        <span>🌟</span> Open when you can't sleep
+      </button>
+
+      <button class="open-btn btn-giveup" onclick="openMessage('giveup')">
+        <span>🌱</span> Open when you feel like giving up
+      </button>
+
+      <button class="open-btn btn-smile" onclick="openMessage('smile')">
+        <span>😊</span> Open when you want to smile
+      </button>
+
+      <button class="open-btn btn-surprise" onclick="openMessage('surprise')">
+        <span>✨</span> A little surprise just for you <span>✨</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="message-box" id="message-box">
+    <div class="message-header">
+      <span class="message-icon" id="message-icon">💬</span>
+      <span class="message-title" id="message-title">For you</span>
+    </div>
+    <p id="typewriter-text"></p>
+    <button class="close-btn" onclick="closeMessage()">🌸 Close & go back</button>
+  </div>
+
+  <p class="footer">Made with 💜 by your bhaiya/didi, just for you Anshika &nbsp;·&nbsp; always ♾️</p>
+
+  <script>
+    // Remove splash screen after 2 seconds
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        document.getElementById('main-card').classList.add('loaded');
+      }, 2000);
+    });
+
+    const messages = {
+      sad: {
+        icon: '🌧️',
+        title: 'When you\'re sad…',
+        text:
+          `Hey Anshika. I see you, and I know right now your heart feels heavy.\nYou don't have to pretend to be okay — not with me, not ever.\n\nI've watched you grow up, and I know how big your heart is. That's exactly why it hurts sometimes — you feel everything so deeply, and that's not a flaw. It's one of the most beautiful things about you.\n\nCry if you need to. There's no shame in it. And when the tears slow down, remember:\nthis sadness is temporary. It will pass — just like every hard moment before it did.\n\nI'm your older sibling and I'll always, always be in your corner. No matter what.\nYou are so much braver than you know, little sis. 💜`
+      },
+      miss: {
+        icon: '🌙',
+        title: 'When you miss me…',
+        text:
+          `Awww Anshika, you miss me? 🥺 That makes my whole heart melt.\n\nYou know, no matter how much we bicker or argue like proper siblings do — at the end of the day, you're one of my favorite people on this entire planet.\n\nClose your eyes. Think about all the silly moments we've shared at home — the laughs, the stupid fights, the times we stayed up way too late doing absolutely nothing together.\n\nI carry all of those with me everywhere I go. And wherever I am, a part of me is always home — with you.\n\nCall me anytime, okay? Even just to say hi. I'll pick up. I'll always pick up. 💌`
+      },
+      sleep: {
+        icon: '🌟',
+        title: 'When you can\'t sleep…',
+        text:
+          `The house is quiet, but your mind won't stop — I know that feeling, Anshika.\n\nPut the phone down after this, okay? 😄\n\nTake a slow, deep breath in… hold it… and let it out gently. Do that three times. Feel your body get a little heavier with each one.\n\nYou don't have to figure out tomorrow tonight. Whatever's on your mind — school, life, feelings — it'll still be there in the morning, and you'll handle it so much better after you rest.\n\nImagine something cozy. Your favorite place, your favorite blanket, your favorite snack. You are safe. You are loved. You are home.\n\nNow close your eyes. Your big sibling says it's time to sleep. 🌙✨`
+      },
+      giveup: {
+        icon: '🌱',
+        title: 'When you feel like giving up…',
+        text:
+          `Hey. Stop. Breathe. And read this slowly.\n\nI know you're tired, Anshika. I know you've been trying so hard and it feels like nothing is working. That's real, and I'm not going to tell you it isn't.\n\nBut I need you to know something — I have watched you. I've seen you fall and get back up over and over again. You might not see how strong you are, but I do. I've had the front-row seat your whole life.\n\nYou are not behind. You are not a failure. You are growing — and growing is supposed to be uncomfortable. The best things always are.\n\nTake a break. Eat something warm. Sleep it off. But don't you dare give up on yourself.\nBecause I believe in you more than you know — and as your sibling, it's literally my job to be right about this. 🌱💪`
+      },
+      smile: {
+        icon: '😊',
+        title: 'When you want to smile…',
+        text:
+          `Okay Anshika, smile tax is being collected RIGHT NOW 😄\n\nThink about the most ridiculous thing we've ever done together. I'm already laughing. You're laughing too, aren't you? See — it works every time.\n\nFun fact: your laugh is one of my favorite sounds in the whole world. Not even exaggerating. When you really laugh — that full, uncontrollable kind — it's contagious and wonderful and I love it.\n\nAlso can we just appreciate: ice cream exists. Rainy days with chai exist. Cozy blankets exist. Dumb memes exist. Baby animals exist. You, Anshika, exist — and that alone makes the world a better place.\n\nNever forget that. You are the best little sister and I'm so lucky. 😊🌸`
+      },
+      surprise: {
+        icon: '🎁',
+        title: 'The one thing I always want you to know…',
+        text:
+          `Anshika.\n\nNo matter how many years pass, no matter how grown-up we both get, no matter how busy life becomes —\n\nYou will always be my little sister. And I will always, always be there for you.\n\nNot out of obligation. Not just because we're family.\nBut because you — exactly as you are — are someone worth showing up for, every single time.\n\nI made this little thing because I wanted you to have something to come back to when the world feels too loud or too heavy. A small reminder that someone who knows you really well thinks you are absolutely wonderful.\n\nI love you, Anshika. More than I say it out loud (because siblings, you know 😄).\n\nBut it's true. Always. ♾️💜`
+      }
+    };
+
+    let typewriterTimer = null;
+
+    function typewriter(element, text, speed = 25) {
+      if (typewriterTimer) clearTimeout(typewriterTimer);
+      element.innerHTML = '';
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.innerHTML = text.slice(0, i + 1).replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+          i++;
+          typewriterTimer = setTimeout(type, speed);
+        } else {
+          element.innerHTML = text.replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+        }
+      }
+      type();
+    }
+
+    function openMessage(key) {
+      // Trigger confetti if it's the surprise button
+      if(key === 'surprise') {
+        fireConfetti();
+      }
+
+      const data = messages[key];
+      if (!data) return;
+
+      const box = document.getElementById('message-box');
+      const iconEl = document.getElementById('message-icon');
+      const titleEl = document.getElementById('message-title');
+      const textEl = document.getElementById('typewriter-text');
+
+      iconEl.textContent = data.icon;
+      titleEl.textContent = data.title;
+      textEl.innerHTML = '';
+
+      box.classList.add('animating');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          box.classList.add('visible');
+        });
+      });
+
+      setTimeout(() => {
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        typewriter(textEl, data.text, 25);
+      }, 150);
+    }
+
+    function closeMessage() {
+      const box = document.getElementById('message-box');
+      box.classList.remove('visible');
+
+      if (typewriterTimer) {
+        clearTimeout(typewriterTimer);
+        typewriterTimer = null;
+      }
+
+      setTimeout(() => {
+        box.classList.remove('animating');
+        document.getElementById('typewriter-text').innerHTML = '';
+      }, 600);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function fireConfetti() {
+      var duration = 3 * 1000;
+      var animationEnd = Date.now() + duration;
+      var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
+
+    const music = document.getElementById('bg-music');
+    const musicIcon = document.getElementById('music-icon');
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+        musicIcon.textContent = '🎵';
+        isPlaying = false;
+      } else {
+        music.play().catch(() => {
+          console.log('Autoplay was blocked. User interaction required.');
+        });
+        musicIcon.textContent = '⏸️';
+        isPlaying = true;
+      }
+    }
+
+    const particles = ['❤️', '💜', '🌸', '✨', '💫', '🌷', '⭐', '💕', '🦋'];
+    function createParticle() {
+      const el = document.createElement('span');
+      el.classList.add('heart-particle');
+      el.textContent = particles[Math.floor(Math.random() * particles.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      const size = 1 + Math.random() * 1.5;
+      el.style.fontSize = size + 'rem';
+      const duration = 12 + Math.random() * 15;
+      el.style.animationDuration = duration + 's';
+      el.style.animationDelay = Math.random() * 5 + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), (duration + 5) * 1000);
+    }
+
+    setInterval(createParticle, 1200);
+    for (let i = 0; i < 12; i++) createParticle();
+
+  </script>
+</body>
+</html>
